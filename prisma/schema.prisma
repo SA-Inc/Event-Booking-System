@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./events_booking.db"
+}
+
+model Event {
+  id Int @id @default(autoincrement()) 
+  title String
+  description String?
+  location String
+  start_date DateTime
+  end_date DateTime
+  online Boolean @default(true)
+  offline Boolean @default(false)
+}

@@ -1,0 +1,21 @@
+GET http://localhost:3000/api/event
+
+###
+GET http://localhost:3000/api/event/6
+
+###
+POST http://localhost:3000/api/event
+Content-Type: application/json
+
+{
+    "title": "Event 1",
+    "description": "First event in Year",
+    "location": "Fyrmaniv building",
+    "start_date": "2020-03-19T14:21:00+02:00",
+    "end_date": "2020-03-19T14:21:00+02:00",
+    "online": true,
+    "offline": false
+}
+
+###
+DELETE http://localhost:3000/api/event/1

@@ -1,0 +1,210 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- <link rel="stylesheet" href="element_ui.css"> -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/reset.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <link rel="stylesheet" href="css/app.css">
+
+    <title>Event Booking</title>
+</head>
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <el-row>
+                    <el-col :span="12" style="text-align: left;">
+                        <div>
+                            <h1>Event Booking</h1>
+                        </div>
+                    </el-col>
+                    <el-col :span="12" style="text-align: right;">
+                        <!-- <div>
+                            <el-dropdown trigger="click" @command="changeLanguage">
+                                <el-button type="primary">
+                                    Language<i class="el-icon-arrow-down el-icon--right"></i>
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item command="ru">Русский</el-dropdown-item>
+                                    <el-dropdown-item command="en">English</el-dropdown-item>
+                                    <el-dropdown-item command="kz">Qazaq</el-dropdown-item>
+                                    <el-dropdown-item command="de">Deutsch</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </div> -->
+                    </el-col>
+                </el-row>
+            </el-header>
+
+            <el-main>
+                <!-- <el-button type="warning" @click="postEventFlag = true">Create</el-button>
+                <el-button type="warning">Reload</el-button> -->
+
+                <div>
+                    <el-form>
+                        <el-form-item>
+                            <el-input placeholder="Title" v-model="newEvent.title"></el-input>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-input placeholder="Location" v-model="newEvent.location"></el-input>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-date-picker placeholder="Starts" type="datetime" v-model="newEvent.start_date"></el-date-picker>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-date-picker placeholder="Ends" type="datetime" v-model="newEvent.end_date"></el-date-picker>
+                        </el-form-item>
+    
+                        <el-form-item label="Event type">
+                            <el-checkbox v-model="newEvent.online">Online</el-checkbox>
+                            <el-checkbox v-model="newEvent.offline">Offline</el-checkbox>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-input placeholder="Description" type="textarea" :rows="5"  v-model="newEvent.description"></el-input>
+                        </el-form-item>
+                    </el-form>
+
+                    <span slot="footer">
+                        <el-button type="primary" v-on:click="postEvent();">Create</el-button>
+                    </span>
+                </div>
+
+
+
+                <el-divider></el-divider>
+
+                <v-calendar is-expanded show-weeknumbers :attributes='calendar_data'></v-calendar>
+
+                <el-divider></el-divider>
+
+
+
+                <el-table :data="events" style="width: 100%">
+                    <el-table-column label="ID">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.id }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Title">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.title }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Start Date">
+                        <template slot-scope="scope">
+                            <span>{{ dateFormatter(scope.row.start_date) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="End Date">
+                        <template slot-scope="scope">
+                            <span>{{ dateFormatter(scope.row.end_date) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Online">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.online === true ? 'success' : 'danger'">Online</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Offline">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.offline === true ? 'success' : 'danger'">Offline</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Operations">
+                        <template slot-scope="scope">
+                            <el-button type="primary" @click="getEventByID(scope.row.id); viewEventFlag = true"><i class="el-icon-document"></i></el-button>
+                            <el-button type="warning" @click="getEventByID(scope.row.id); editEventFlag = true"><i class="el-icon-edit"></i></el-button>
+                            <el-button type="danger" @click="deleteEvent(scope.row.id)"><i class="el-icon-delete"></i></el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <el-dialog title="View Event" :visible.sync="viewEventFlag" width="30%" :before-close="handleClose">
+                    <p>ID <span>{{ selectedEvent.id }}</span></p>
+                    <p>Title <span>{{ selectedEvent.title }}</span></p>
+                    <p>Location <span>{{ selectedEvent.location }}</span></p>
+                    <p>Starts <span>{{ dateFormatter(selectedEvent.start_date) }}</span></p>
+                    <p>Ends <span>{{ dateFormatter(selectedEvent.end_date) }}</span></p>
+                    <p>Online <span>{{ selectedEvent.online }}</span></p>
+                    <p>Offline <span>{{ selectedEvent.offline }}</span></p>
+                    <p>Description <span>{{ selectedEvent.description }}</span></p>
+
+                    <span slot="footer" class="dialog-footer">
+                        <el-button type="danger" v-on:click="viewEventFlag = false">Close</el-button>
+                    </span>
+                </el-dialog>
+
+
+
+                <el-dialog title="Update Event" :visible.sync="editEventFlag" width="30%" :before-close="handleClose">
+                    <el-form>
+                        <p>ID {{ selectedEvent.id }}</p>
+
+                        <el-form-item>
+                            <el-input placeholder="Title" v-model="selectedEvent.title"></el-input>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-input placeholder="Location" v-model="selectedEvent.location"></el-input>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-date-picker placeholder="Starts" type="datetime" v-model="selectedEvent.start_date"></el-date-picker>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-date-picker placeholder="Ends" type="datetime" v-model="selectedEvent.end_date"></el-date-picker>
+                        </el-form-item>
+    
+                        <el-form-item label="Event type">
+                            <el-checkbox v-model="selectedEvent.online">Online</el-checkbox>
+                            <el-checkbox v-model="selectedEvent.offline">Offline</el-checkbox>
+                        </el-form-item>
+    
+                        <el-form-item>
+                            <el-input placeholder="Description" type="textarea" :rows="5"  v-model="selectedEvent.description"></el-input>
+                        </el-form-item>
+                    </el-form>
+
+                    <span slot="footer" class="dialog-footer">
+                        <el-button type="danger" v-on:click="editEventFlag = false">Close</el-button>
+                        <el-button type="success" v-on:click="editEventFlag = false; updateEvent(selectedEvent.id)">Update</el-button>
+                    </span>
+                </el-dialog>
+            </el-main>
+
+            <el-footer>
+                <p>By Saparov Arman</p>
+            </el-footer>
+        </el-container>
+    </div>
+
+    <!-- <script src="vue.js"></script> -->
+    <!-- <script src="element_ui.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <script src='https://unpkg.com/v-calendar'></script>
+    
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/ru-RU.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/de.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/kz.js"></script>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
