@@ -1,3 +1,19 @@
 * {
     font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
+
+.red_text {
+    color: #F56C6C;
+}
+
+.yellow_text {
+    color: #E6A23C;
+}
+
+.green_text {
+    color: #67C23A;
+}
+
+.blue_text {
+    color: #409EFF;
+}
